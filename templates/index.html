@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI House Price Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, #0f172a);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 550px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #60a5fa, #2563eb);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Full width for specific rows */
+        .full-width { grid-column: span 2; }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        input::placeholder { color: #475569; }
+
+        .submit-btn {
+            margin-top: 10px;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .result-card {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 16px;
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .result-label { color: #4ade80; font-size: 14px; margin-bottom: 5px; }
+        .result-value { font-size: 24px; font-weight: 700; color: white; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Fix */
+        @media (max-width: 480px) {
+            .grid-form { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Predict House Price</h1>
+        <p class="subtitle">Enter property details for a real-time market estimate</p>
+        
+        <form action="/predict" method="post" class="grid-form">
+            <div class="input-group full-width">
+                <label for="MedInc">Median Neighborhood Income ($)</label>
+                <input type="number" step="0.01" name="MedInc" placeholder="e.g. 5.5 (in $10k)" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="HouseAge">Property Age</label>
+                <input type="number" name="HouseAge" placeholder="e.g. 15" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="AveRooms">Total Rooms</label>
+                <input type="number" step="0.01" name="AveRooms" placeholder="e.g. 5" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="AveBedrms">Bedrooms</label>
+                <input type="number" step="0.01" name="AveBedrms" placeholder="e.g. 1" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="Population">Neighborhood Population</label>
+                <input type="number" name="Population" placeholder="e.g. 1425" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="AveOccup">Occupancy</label>
+                <input type="number" step="0.01" name="AveOccup" placeholder="Avg people" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="Latitude">Latitude</label>
+                <input type="number" step="0.0001" name="Latitude" placeholder="34.05" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="Longitude">Longitude</label>
+                <input type="number" step="0.0001" name="Longitude" placeholder="-118.24" required>
+            </div>
+            
+            <button type="submit" class="submit-btn full-width">Generate Estimate</button>
+        </form>
+        
+        {% if prediction %}
+            <div class="result-card">
+                <div class="result-label">Estimated Market Value</div>
+                <div class="result-value">{{ prediction }}</div>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
